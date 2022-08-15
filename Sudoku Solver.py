@@ -1,36 +1,63 @@
-from random import sample
-board = []
-game_still_going = True
-square = []
-col = []
-num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-"""So we need to make the logic for making the 2D grid, then create a board for the game, 
-then, given a board state, how does the game know which squares to fill in?"""
+def find_next_empty(puzzle):
+    for r in range(9):
+        for c in range(9):
+            if puzzle[r][c] == -1:
+                return r, c
+    return None, None
 
-def print_board(board):
+def is_valid(puzzle, guess, row, col):
+    row_vals = puzzle[row]
+    if guess in row_vals:
+        return False
 
-def make_board():
-    x = 0
-    while x < 9:
-        board.append(sample(num_list, 9))
-        x += 1
+    col_vals = [puzzle[i][col] for i in range(9)]
+    if guess in col_vals:
+        return False
 
-def check_row(row):
-    while "123456789" not in row:
-        #row not complete
-        pass
+    row_start = (row // 3) * 3
+    col_start = (col // 3) * 3
 
-def check_square(square):
-    while "123456789" not in square:
-        #square not complete    
-        pass
+    for r in range(row_start, row_start + 3):
+        for c in range(col_start, col_start + 3):
+            if puzzle[r][c] == guess:
+                return False
+    
+    return True
 
-def check_col(col):
-    while "12345789" not in col:
-        #col not complete
-        #possibly check for columns by zipping lists and checking that each index contains 1-9.
-        pass
 
-make_board()
-print_board(board)
-print(sample(num_list, 9))
+def solve_sudoku(puzzle):
+    
+
+
+    row, col = find_next_empty(puzzle)
+
+    if row is None:
+        return True
+
+    for guess in range(1, 10):
+        if is_valid(puzzle, guess, row, col):
+            puzzle[row][col] = guess
+            if solve_sudoku(puzzle):
+                return True
+            
+        
+        puzzle[row][col] = -1
+
+    return False
+
+if __name__ == '__main__':
+    example_board = [
+        [3, 9, -1,   -1, 5, -1,   -1, -1, -1],
+        [-1, -1, -1,   2, -1, -1,   -1, -1, 5],
+        [-1, -1, -1,   7, 1, 9,   -1, 8, -1],
+
+        [-1, 5, -1,   -1, 6, 8,   -1, -1, -1],
+        [2, -1, 6,   -1, -1, 3,   -1, -1, -1],
+        [-1, -1, -1,   -1, -1, -1,   -1, -1, 4],
+
+        [5, -1, -1,   -1, -1, -1,   -1, -1, -1],
+        [6, 7, -1,   1, -1, 5,   -1, 4, -1],
+        [1, -1, 9,   -1, -1, -1,   2, -1, -1]
+    ]
+    print(solve_sudoku(example_board))
+    print(example_board)
